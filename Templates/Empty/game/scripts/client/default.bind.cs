@@ -476,3 +476,56 @@ GlobalActionMap.bind(keyboard, "ctrl F3", doProfile);
 GlobalActionMap.bind(keyboard, "tilde", toggleConsole);
 GlobalActionMap.bindCmd(keyboard, "alt k", "cls();","");
 GlobalActionMap.bindCmd(keyboard, "alt enter", "", "Canvas.attemptFullscreenToggle();");
+
+function printFist(%val)
+{
+   if(%val)
+      echo("FistStart");
+   else
+      echo("FistEnd");   
+}
+GlobalActionMap.bind(myo, "fist", printFist);
+function printSpread(%val)
+{
+   if(%val)
+      echo("SpreadStart");
+   else
+      echo("SpreadEnd");   
+}
+GlobalActionMap.bind(myo, "spread", printSpread);
+function printTwistIn(%val)
+{
+   if(%val)
+      echo("TwistInStart");
+   else
+      echo("TwistInEnd");   
+}
+GlobalActionMap.bind(myo, "twist_in", printTwistIn);
+function printWaveIn(%val)
+{
+   if(%val)
+      echo("WaveInStart");
+   else
+      echo("WaveInEnd");   
+}
+GlobalActionMap.bind(myo, "wave_in", printWaveIn);
+function printWaveOut(%val)
+{
+   if(%val)
+      echo("WaveOutStart");
+   else
+      echo("WaveOutEnd");   
+}
+GlobalActionMap.bind(myo, "wave_out", printWaveOut);
+
+function printOrientation(%roll, %pitch, %yaw, %angle)
+{
+   %euler = angAxisToEuler(%roll SPC %pitch SPC %yaw SPC %angle);
+   %eX = getWord(%euler, 0);
+   %eY = getWord(%euler, 1);
+   %eZ = getWord(%euler, 2);
+   %axis = eulerToAngAxis(%eX SPC %eY SPC %eZ);
+   %neweuler = angAxisToEuler(%axis);
+   theCube.rotation = %axis;
+}
+GlobalActionMap.bind(myo, "orientation", printOrientation);

@@ -78,6 +78,38 @@ new SimGroup(MissionGroup) {
       Material = "BlankWhite";
          Enabled = "1";
    };
+   new TSStatic(theCube) {
+      shapeName = "art/shapes/cube/cube.dae";
+      playAmbient = "1";
+      meshCulling = "0";
+      originSort = "0";
+      collisionType = "Collision Mesh";
+      decalType = "Collision Mesh";
+      allowPlayerStep = "1";
+      renderNormals = "0";
+      forceDetail = "-1";
+      position = "-4.015 3.87241 0.933932";
+      rotation = "-0.103835 0.338244 0.935313 177.965";
+      scale = "5 1 1";
+      canSave = "1";
+      canSaveDynamicFields = "1";
+   };
+   new TSStatic(theCube1) {
+      shapeName = "art/shapes/cube/cube.dae";
+      playAmbient = "1";
+      meshCulling = "0";
+      originSort = "0";
+      collisionType = "Collision Mesh";
+      decalType = "Collision Mesh";
+      allowPlayerStep = "1";
+      renderNormals = "0";
+      forceDetail = "-1";
+      position = "-4.015 1.29703 0.933932";
+      rotation = "1 0 0 0";
+      scale = "5 1 1";
+      canSave = "1";
+      canSaveDynamicFields = "1";
+   };
 };
 //--- OBJECT WRITE END ---
 
