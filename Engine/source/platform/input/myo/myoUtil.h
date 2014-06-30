@@ -25,7 +25,7 @@
 
 #include "math/mPoint3.h"
 #include "math/mQuat.h"
-#include "myo.hpp"
+#include <myo/myo.hpp>
 
 namespace MyoUtil
 {

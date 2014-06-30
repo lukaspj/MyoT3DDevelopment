@@ -35,8 +35,13 @@ MODULE_BEGIN(MyoDevice)
 
    MODULE_INIT
    {
+      try{
+         ManagedSingleton< MyoDevice >::createSingleton();
+      } catch(std::runtime_error exception){
+         Con::errorf("Could not create the Myo device: %s", exception.what());
+         return;
+      }
       MyoDevice::staticInit();
-      ManagedSingleton< MyoDevice >::createSingleton();
       if (MyoDevice::smEnableDevice)
       {
          MYODEV->enable();
@@ -48,8 +53,11 @@ MODULE_BEGIN(MyoDevice)
    
    MODULE_SHUTDOWN
    {
-      INPUTMGR->unregisterDevice(MYODEV);
-      ManagedSingleton< MyoDevice >::deleteSingleton();
+      if(ManagedSingleton< MyoDevice >::instanceOrNull())
+      {
+         INPUTMGR->unregisterDevice(MYODEV);
+         ManagedSingleton< MyoDevice >::deleteSingleton();
+      }
    }
 
 MODULE_END;
@@ -233,21 +241,21 @@ bool MyoDevice::process()
    //TODO: Fetch data from the Myo here, or something similar.
    mHub.runOnce(0);
 
-   if (mListener->oldPose == myo::Pose::fist && mListener->currentPose == myo::Pose::none ||
-      mListener->currentPose == myo::Pose::fist && mListener->oldPose == myo::Pose::none)
+   if (mListener->oldPose == myo::Pose::fist && mListener->currentPose == myo::Pose::rest ||
+      mListener->currentPose == myo::Pose::fist && mListener->oldPose == myo::Pose::rest)
       INPUTMGR->buildInputEvent(mDeviceType, DEFAULT_MOTION_UNIT, SI_BUTTON, MYO_FIST, mListener->currentPose == myo::Pose::fist ? SI_MAKE : SI_BREAK, mListener->currentPose == myo::Pose::fist ? 1.0f : 0.0f);
-   if (mListener->oldPose == myo::Pose::fingers_spread && mListener->currentPose == myo::Pose::none ||
-      mListener->currentPose == myo::Pose::fingers_spread && mListener->oldPose == myo::Pose::none)
-      INPUTMGR->buildInputEvent(mDeviceType, DEFAULT_MOTION_UNIT, SI_BUTTON, MYO_SPREAD, mListener->currentPose == myo::Pose::fingers_spread ? SI_MAKE : SI_BREAK, mListener->currentPose == myo::Pose::fingers_spread ? 1.0f : 0.0f);
-   if (mListener->oldPose == myo::Pose::twist_in && mListener->currentPose == myo::Pose::none ||
-      mListener->currentPose == myo::Pose::twist_in && mListener->oldPose == myo::Pose::none)
-      INPUTMGR->buildInputEvent(mDeviceType, DEFAULT_MOTION_UNIT, SI_BUTTON, MYO_TWIST_IN, mListener->currentPose == myo::Pose::twist_in ? SI_MAKE : SI_BREAK, mListener->currentPose == myo::Pose::twist_in ? 1.0f : 0.0f);
-   if (mListener->oldPose == myo::Pose::wave_in && mListener->currentPose == myo::Pose::none ||
-      mListener->currentPose == myo::Pose::wave_in && mListener->oldPose == myo::Pose::none)
-      INPUTMGR->buildInputEvent(mDeviceType, DEFAULT_MOTION_UNIT, SI_BUTTON, MYO_WAVE_IN, mListener->currentPose == myo::Pose::wave_in ? SI_MAKE : SI_BREAK, mListener->currentPose == myo::Pose::wave_in ? 1.0f : 0.0f);
-   if (mListener->oldPose == myo::Pose::wave_out && mListener->currentPose == myo::Pose::none ||
-      mListener->currentPose == myo::Pose::wave_out && mListener->oldPose == myo::Pose::none)
-      INPUTMGR->buildInputEvent(mDeviceType, DEFAULT_MOTION_UNIT, SI_BUTTON, MYO_WAVE_OUT, mListener->currentPose == myo::Pose::wave_out ? SI_MAKE : SI_BREAK, mListener->currentPose == myo::Pose::wave_out ? 1.0f : 0.0f);
+   if (mListener->oldPose == myo::Pose::fingersSpread && mListener->currentPose == myo::Pose::rest ||
+      mListener->currentPose == myo::Pose::fingersSpread && mListener->oldPose == myo::Pose::rest)
+      INPUTMGR->buildInputEvent(mDeviceType, DEFAULT_MOTION_UNIT, SI_BUTTON, MYO_SPREAD, mListener->currentPose == myo::Pose::fingersSpread ? SI_MAKE : SI_BREAK, mListener->currentPose == myo::Pose::fingersSpread ? 1.0f : 0.0f);
+   if (mListener->oldPose == myo::Pose::twistIn && mListener->currentPose == myo::Pose::rest ||
+      mListener->currentPose == myo::Pose::twistIn && mListener->oldPose == myo::Pose::rest)
+      INPUTMGR->buildInputEvent(mDeviceType, DEFAULT_MOTION_UNIT, SI_BUTTON, MYO_TWIST_IN, mListener->currentPose == myo::Pose::twistIn ? SI_MAKE : SI_BREAK, mListener->currentPose == myo::Pose::twistIn ? 1.0f : 0.0f);
+   if (mListener->oldPose == myo::Pose::waveIn && mListener->currentPose == myo::Pose::rest ||
+      mListener->currentPose == myo::Pose::waveIn && mListener->oldPose == myo::Pose::rest)
+      INPUTMGR->buildInputEvent(mDeviceType, DEFAULT_MOTION_UNIT, SI_BUTTON, MYO_WAVE_IN, mListener->currentPose == myo::Pose::waveIn ? SI_MAKE : SI_BREAK, mListener->currentPose == myo::Pose::waveIn ? 1.0f : 0.0f);
+   if (mListener->oldPose == myo::Pose::waveOut && mListener->currentPose == myo::Pose::rest ||
+      mListener->currentPose == myo::Pose::waveOut && mListener->oldPose == myo::Pose::rest)
+      INPUTMGR->buildInputEvent(mDeviceType, DEFAULT_MOTION_UNIT, SI_BUTTON, MYO_WAVE_OUT, mListener->currentPose == myo::Pose::waveOut ? SI_MAKE : SI_BREAK, mListener->currentPose == myo::Pose::waveOut ? 1.0f : 0.0f);
 
    INPUTMGR->buildInputEvent(mDeviceType, DEFAULT_MOTION_UNIT, SI_ROT, MYO_ORIENTATION, SI_MOVE, QuatF(mListener->orientation));
 
@@ -305,9 +313,21 @@ void MyoDevice::MotionListener::onAccelerometerData(myo::Myo* myo, uint64_t time
    //TODO: Parse the acceleration data.
 }
 
+void MyoDevice::MotionListener::onArmRecognized(myo::Myo* myo, uint64_t timestamp, myo::Arm arm)
+{
+}
+
+void MyoDevice::MotionListener::onArmLost(myo::Myo* myo, uint64_t timestamp)
+{
+}
+
 void MyoDevice::MotionListener::onGyroscopeData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& gyro)
 {
    //TODO: Parse the orientation data.
+}
+
+void MyoDevice::MotionListener::onRssi(myo::Myo* myo, uint64_t timestamp, int8_t rssi)
+{
 }
 
 void MyoDevice::MotionListener::onPose(myo::Myo* myo, uint64_t timestamp, myo::Pose pose)
@@ -316,7 +336,7 @@ void MyoDevice::MotionListener::onPose(myo::Myo* myo, uint64_t timestamp, myo::P
 
    // Vibrate the Myo whenever we've detected that the user has made a fist.
    if (pose == myo::Pose::fist) {
-      myo->vibrate(myo::Myo::VibrationMedium);
+      myo->vibrate(myo::Myo::vibrationMedium);
    }
 }
 

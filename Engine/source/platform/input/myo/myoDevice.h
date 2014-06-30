@@ -53,12 +53,25 @@ protected:
       }
       virtual ~MotionListener() {}
 
+      /// Called when a Myo has been paired.
       virtual void onPair(myo::Myo* myo, uint64_t timestamp);
+
+      /// Called when a paired Myo has been connected.
       virtual void onConnect(myo::Myo* myo, uint64_t timestamp);
+
+      /// Called when a paired Myo has been disconnected.
       virtual void onDisconnect(myo::Myo* myo, uint64_t timestamp);
 
-      // onOrientationData() is called whenever the Myo device provides its current orientation, which is represented
-      // as a quaternion.
+      /// Called when a paired Myo recognizes that it is on an arm.
+      virtual void onArmRecognized(myo::Myo* myo, uint64_t timestamp, myo::Arm arm);
+
+      /// Called when a paired Myo is moved or removed from the arm.
+      virtual void onArmLost(myo::Myo* myo, uint64_t timestamp);
+
+      /// Called when a paired Myo has provided a new pose.
+      void onPose(myo::Myo* myo, uint64_t timestamp, myo::Pose pose);
+
+      /// Called when a paired Myo has provided new orientation data.
       void onOrientationData(myo::Myo* myo, uint64_t timestamp, const myo::Quaternion<float>& quat);
 
       /// Called when a paired Myo has provided new accelerometer data in units of g.
@@ -67,9 +80,9 @@ protected:
       /// Called when a paired Myo has provided new gyroscope data in units of deg/s.
       virtual void onGyroscopeData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& gyro);
 
-      // onPose() is called whenever the Myo detects that the person wearing it has changed their pose, for example,
-      // making a fist, or not making a fist anymore.
-      void onPose(myo::Myo* myo, uint64_t timestamp, myo::Pose pose);
+      /// Called when a paired Myo has provided a new RSSI value.
+      /// @see Myo::requestRssi() to request an RSSI value from the Myo.
+      virtual void onRssi(myo::Myo* myo, uint64_t timestamp, int8_t rssi);
 
       // We define this function to print the current values that were updated by the on...() functions above.
       void print();
