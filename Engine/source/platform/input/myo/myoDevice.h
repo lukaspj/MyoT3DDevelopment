@@ -92,6 +92,8 @@ protected:
       QuatF orientation;
       myo::Pose currentPose;
       myo::Pose oldPose;
+
+      VectorF acceleration;
    };
 
    /// The Myo hub, the Hub provides access to one or more Myos.

@@ -176,7 +176,7 @@ bool MyoDevice::enable()
    // We try to find a Myo (any Myo) that's nearby and connect to it. waitForAnyMyo() takes a timeout
    // value in milliseconds. In this case we will try to find a Myo for 10 seconds, and if that fails, the function
    // will return a null pointer.
-   mMyo = mHub.waitForAnyMyo(10000);
+   mMyo = mHub.waitForAdjacentMyo(10000);
 
    // If waitForAnyMyo() returned a null pointer, we failed to find a Myo, so exit with an error message.
    if (!mMyo) {
@@ -310,7 +310,9 @@ void MyoDevice::MotionListener::onOrientationData(myo::Myo* myo, uint64_t timest
 
 void MyoDevice::MotionListener::onAccelerometerData(myo::Myo* myo, uint64_t timestamp, const myo::Vector3<float>& accel)
 {
-   //TODO: Parse the acceleration data.
+   acceleration = VectorF(accel.x() * 9.806,
+                           accel.y() * 9.806,
+                           accel.z() * 9.806);
 }
 
 void MyoDevice::MotionListener::onArmRecognized(myo::Myo* myo, uint64_t timestamp, myo::Arm arm)
